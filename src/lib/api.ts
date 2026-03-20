@@ -52,11 +52,11 @@ export function createApi(getApiKey: () => string | null, onUnauthorized: () => 
         body: JSON.stringify({ is_verified: isVerified }),
       }),
 
-    getLandingPageMechanics: () =>
-      request<import("@/types").LandingPageEntry[]>("/admin/landing-page/mechanics"),
+    getLandingPageMechanics: (skip = 0, limit = 50) =>
+      request<import("@/types").LandingPageEntry[]>(`/admin/landing-page/mechanics?skip=${skip}&limit=${limit}`),
 
-    getLandingPageCustomers: () =>
-      request<import("@/types").LandingPageEntry[]>("/admin/landing-page/customers"),
+    getLandingPageCustomers: (skip = 0, limit = 50) =>
+      request<import("@/types").LandingPageEntry[]>(`/admin/landing-page/customers?skip=${skip}&limit=${limit}`),
 
     // Validate key by calling mechanics endpoint
     validateKey: (key: string) =>

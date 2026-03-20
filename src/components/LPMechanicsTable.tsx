@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { ArrowUp, ArrowDown, ArrowUpDown, ChevronLeft, ChevronRight } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -18,6 +18,8 @@ import { useAuth } from "@/context/AuthContext";
 type SortKey = "email" | "created_at";
 type SortDir = "asc" | "desc";
 
+const PAGE_SIZE = 50;
+
 export function LPMechanicsTable() {
   const { apiKey, logout } = useAuth();
   const navigate = useNavigate();
@@ -27,10 +29,15 @@ export function LPMechanicsTable() {
     () => { logout(); navigate("/login"); },
   );
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["lp-mechanics"],
-    queryFn: () => api.getLandingPageMechanics(),
+  const [page, setPage] = useState(0);
+
+  const { data, isLoading, isPlaceholderData } = useQuery({
+    queryKey: ["lp-mechanics", page],
+    queryFn: () => api.getLandingPageMechanics(page * PAGE_SIZE, PAGE_SIZE),
+    placeholderData: keepPreviousData,
   });
+
+  const hasNextPage = (data?.length ?? 0) === PAGE_SIZE;
 
   const [sortKey, setSortKey] = useState<SortKey>("created_at");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
@@ -94,39 +101,65 @@ export function LPMechanicsTable() {
   }
 
   return (
-    <div className="rounded-lg border bg-card">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>ID</TableHead>
-            <TableHead><SortHeader label="Email" sortKeyName="email" /></TableHead>
-            <TableHead>Phone Number</TableHead>
-            <TableHead><SortHeader label="Created At" sortKeyName="created_at" /></TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {!sorted.length ? (
+    <div className="space-y-4">
+      <div className="rounded-lg border bg-card">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
-                No entries found
-              </TableCell>
+              <TableHead>ID</TableHead>
+              <TableHead><SortHeader label="Email" sortKeyName="email" /></TableHead>
+              <TableHead>Phone Number</TableHead>
+              <TableHead><SortHeader label="Created At" sortKeyName="created_at" /></TableHead>
             </TableRow>
-          ) : (
-            sorted.map((entry) => (
-              <TableRow key={entry.id}>
-                <TableCell className="font-mono text-sm">{entry.id}</TableCell>
-                <TableCell className="text-sm">{entry.email ?? "—"}</TableCell>
-                <TableCell className="text-sm">{entry.phone_number ?? "—"}</TableCell>
-                <TableCell className="text-sm">
-                  {entry.created_at
-                    ? new Date(entry.created_at).toLocaleDateString()
-                    : "—"}
+          </TableHeader>
+          <TableBody>
+            {!sorted.length ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                  No entries found
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : (
+              sorted.map((entry) => (
+                <TableRow key={entry.id}>
+                  <TableCell className="font-mono text-sm">{entry.id}</TableCell>
+                  <TableCell className="text-sm">{entry.email ?? "—"}</TableCell>
+                  <TableCell className="text-sm">{entry.phone_number ?? "—"}</TableCell>
+                  <TableCell className="text-sm">
+                    {entry.created_at
+                      ? new Date(entry.created_at).toLocaleDateString()
+                      : "—"}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">Page {page + 1}</p>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => p - 1)}
+            disabled={page === 0}
+          >
+            <ChevronLeft className="h-4 w-4 mr-1" />
+            Previous
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setPage((p) => p + 1)}
+            disabled={!hasNextPage || isPlaceholderData}
+          >
+            Next
+            <ChevronRight className="h-4 w-4 ml-1" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
