@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #f8fafc;
+    --foreground: #0f172a;
+
+    --card: #ffffff;
+    --card-foreground: #0f172a;
+
+    --popover: #ffffff;
+    --popover-foreground: #0f172a;
+
+    --primary: #5c6d83;
+    --primary-foreground: #ffffff;
+
+    --secondary: #eef2f6;
+    --secondary-foreground: #0f172a;
+
+    --muted: #eef2f6;
+    --muted-foreground: #5c6d83;
+
+    --accent: #00e5ff;
+    --accent-foreground: #0f172a;
+
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+
+    --border: #a3abb9;
+    --input: #a3abb9;
+    --ring: #5c6d83;
+
+    --radius: 0.5rem;
+
+    --font-heading: "Manrope", sans-serif;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+    overscroll-behavior: none;
+    height: 100%;
+  }
+  body {
+    @apply bg-ing-neutral text-ing-body font-manrope;
+    overscroll-behavior: none;
+    height: 100%;
+    -webkit-font-smoothing: auto;
+    -moz-osx-font-smoothing: auto;
+  }
+  #root {
+    height: 100%;
+  }
+}
