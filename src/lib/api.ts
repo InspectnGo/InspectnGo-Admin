@@ -58,6 +58,14 @@ export function createApi(getApiKey: () => string | null, onUnauthorized: () => 
     getLandingPageCustomers: (skip = 0, limit = 50) =>
       request<import("@/types").LandingPageEntry[]>(`/admin/landing-page/customers?skip=${skip}&limit=${limit}`),
 
+    getConfig: () => request<import("@/types").AppConfig>("/admin/config"),
+
+    updateConfig: (body: { maintenance_mode?: boolean; min_app_version?: string }) =>
+      request<import("@/types").AppConfig>("/admin/config", {
+        method: "PUT",
+        body: JSON.stringify(body),
+      }),
+
     // Validate key by calling mechanics endpoint
     validateKey: (key: string) =>
       fetch(`${API_BASE}/admin/mechanics`, {

@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { MechanicsTable } from "@/components/MechanicsTable";
 import { LPMechanicsTable } from "@/components/LPMechanicsTable";
 import { LPCustomersTable } from "@/components/LPCustomersTable";
+import { AppConfigCard } from "@/components/AppConfigCard";
 
 export function Dashboard() {
   const { logout } = useAuth();
@@ -29,7 +30,9 @@ export function Dashboard() {
       </header>
 
       <main className="mx-auto max-w-7xl p-6">
-        <Tabs defaultValue="mechanics">
+        <AppConfigCard />
+
+        <Tabs defaultValue="mechanics" className="mt-6">
           <TabsList className="mb-6">
             <TabsTrigger value="mechanics">Mechanics</TabsTrigger>
             <TabsTrigger value="lp-mechanics">LP Mechanics</TabsTrigger>

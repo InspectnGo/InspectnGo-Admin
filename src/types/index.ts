@@ -25,3 +25,10 @@ export interface LandingPageEntry {
   email: string | null;
   created_at: string | null;
 }
+
+export interface AppConfig {
+  maintenance_mode: boolean;
+  min_app_version: string;
+  maintenance_message: string | null;
+  updated_at: string;
+}
