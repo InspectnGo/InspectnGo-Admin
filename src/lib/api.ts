@@ -47,7 +47,7 @@ export function createApi(getApiKey: () => string | null, onUnauthorized: () => 
       ),
 
     verifyMechanic: (mechanicId: string, isVerified: boolean) =>
-      request(`/admin/mechanic/${encodeURIComponent(mechanicId)}/verify`, {
+      request(`/admin/mechanics/${encodeURIComponent(mechanicId)}/verify`, {
         method: "PATCH",
         body: JSON.stringify({ is_verified: isVerified }),
       }),

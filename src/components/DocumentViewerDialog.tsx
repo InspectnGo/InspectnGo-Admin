@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { createApi } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { getCachedImages, setCachedImages } from "@/lib/imageCache";
 
 interface Props {
   open: boolean;
@@ -36,8 +37,23 @@ export function DocumentViewerDialog({
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["documents", mechanicId, documentType],
-    queryFn: () => api.getMechanicDocuments(mechanicId, documentType),
+    queryFn: async () => {
+      const cached = getCachedImages(mechanicId, documentType);
+      if (cached) return { urls: cached };
+
+      const { urls: signedUrls } = await api.getMechanicDocuments(mechanicId, documentType);
+      const blobUrls = await Promise.all(
+        signedUrls.map(async (url) => {
+          const res = await fetch(url);
+          const blob = await res.blob();
+          return URL.createObjectURL(blob);
+        }),
+      );
+      setCachedImages(mechanicId, documentType, blobUrls);
+      return { urls: blobUrls };
+    },
     enabled: open,
+    staleTime: Infinity,
   });
 
   return (
